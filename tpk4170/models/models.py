@@ -1,8 +1,12 @@
+import numpy as np
+import pythreejs
 from pythreejs import Group
 from pythreejs import Mesh
-from pythreejs import Geometry, Line, SphereGeometry, BufferGeometry
+from pythreejs import (Geometry, SphereGeometry,
+                       BufferGeometry, PlaneGeometry)
 from pythreejs import BufferAttribute
-from pythreejs import LineBasicMaterial, MeshLambertMaterial, MeshPhongMaterial
+from pythreejs import (
+    LineBasicMaterial, MeshLambertMaterial, MeshPhongMaterial, MeshBasicMaterial)
 from pythreejs import AxesHelper as Axes
 
 from matplotlib.colors import to_hex
@@ -20,8 +24,8 @@ class Grid(Group):
                                             (edge, position, 0)])
             geometry_v = Geometry(vertices=[(position, -edge, 0),
                                             (position, edge, 0)])
-            self.add(Line(geometry=geometry_h, material=material))
-            self.add(Line(geometry=geometry_v, material=material))
+            self.add(pythreejs.Line(geometry=geometry_h, material=material))
+            self.add(pythreejs.Line(geometry=geometry_v, material=material))
 
 
 class Ball(Mesh):
@@ -60,3 +64,38 @@ class ColladaMesh(Group):
                                                 specular=specular,
                                                 shininess=30)
         return materials
+
+
+class Plane(Mesh):
+    def __init__(self, color='pink', transparent=False):
+        Mesh.__init__(self, geometry=PlaneGeometry(),
+                      material=MeshBasicMaterial(color=color))
+        self.material.side = 'DoubleSide'
+        if transparent:
+            self.material.transparent = transparent
+            self.material.opacity = 0.5
+
+
+class Line(pythreejs.Line):
+    def __init__(self, start, end, color='white', linewidth=1):
+        geometry = BufferGeometry(attributes={
+            'position': BufferAttribute(
+                np.vstack((start, end)).astype(np.float32),
+                normalized=False)
+        })
+        material = LineBasicMaterial(color=color, linewidth=linewidth)
+        pythreejs.Line.__init__(self, geometry=geometry, material=material)
+
+
+class Triangle(Mesh):
+    def __init__(self, p1, p2, p3, color='yellow'):
+        geometry = BufferGeometry(
+            attributes={
+                'position': BufferAttribute(
+                    np.vstack((p1, p2, p3)).reshape(3, 3).astype(np.float32),
+                    normalized=False)
+            }
+        )
+        material = MeshBasicMaterial(color=color)
+        material.side = 'DoubleSide'
+        Mesh.__init__(self, geometry=geometry, material=material)

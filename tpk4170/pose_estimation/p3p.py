@@ -126,11 +126,14 @@ def solveP3P(obj_points, img_points, camera_matrix, dist_coeffs):
         Rs.append(R)
 
     # Return first correct solution
+    rvecs = []
+    tvecs = []
     cop = obj_points[3]
     cip = img_points[3]
     for R, t in zip(Rs, Ts):
-        x, y, z = (R @ cop.reshape(3, 1) + t.reshape(3, 1)).ravel()
-        if np.allclose(cip, (x/z, y/z)):
-            return R, t.reshape(3, 1)
+        # x, y, z = (R @ cop.reshape(3, 1) + t.reshape(3, 1)).ravel()
+        # if np.allclose(cip, (x/z, y/z)):
+        rvecs.append(cv.Rodrigues(R)[0])
+        tvecs.append(t.reshape(3, 1))
 
-    return None
+    return len(rvecs), rvecs, tvecs
