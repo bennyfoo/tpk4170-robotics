@@ -24,6 +24,11 @@
    <RECEIVE>
       <XML>
          <!-- Command type -->
+         <!-- 1: PTP joint space -->
+         <!-- 2: PTP operational space -->
+         <!-- 3: LIN operational space -->
+         <!-- 4: PTP_REL joint space -->
+         <!-- 5: LIN_REL operational space -->
          <ELEMENT Tag="RobotCommand/Type" Type="INT" />
          <!-- E6AXIS command -->
          <ELEMENT Tag="RobotCommand/Axis/@A1" Type="REAL" />
@@ -33,14 +38,14 @@
          <ELEMENT Tag="RobotCommand/Axis/@A5" Type="REAL" />
          <ELEMENT Tag="RobotCommand/Axis/@A6" Type="REAL" />
          <!-- E6POS command -->
-         <ELEMENT Tag="RobotCommand/Pos/@X" Type="REAL" />
-         <ELEMENT Tag="RobotCommand/Pos/@Y" Type="REAL" />
-         <ELEMENT Tag="RobotCommand/Pos/@Z" Type="REAL" />
-         <ELEMENT Tag="RobotCommand/Pos/@A" Type="REAL" />
-         <ELEMENT Tag="RobotCommand/Pos/@B" Type="REAL" />
-         <ELEMENT Tag="RobotCommand/Pos/@C" Type="REAL" />
-         <!-- E6POS command -->
-         <ELEMENT Tag="RobotCommand/Vel" Type="REAL" />
+         <ELEMENT Tag="RobotCommand/Cart/@X" Type="REAL" />
+         <ELEMENT Tag="RobotCommand/Cart/@Y" Type="REAL" />
+         <ELEMENT Tag="RobotCommand/Cart/@Z" Type="REAL" />
+         <ELEMENT Tag="RobotCommand/Cart/@A" Type="REAL" />
+         <ELEMENT Tag="RobotCommand/Cart/@B" Type="REAL" />
+         <ELEMENT Tag="RobotCommand/Cart/@C" Type="REAL" />
+         <!-- Max velocity scaling -->
+         <ELEMENT Tag="RobotCommand/MaxVelocityScalingFactor" Type="REAL" />
       </XML>
    </RECEIVE>
 
@@ -57,29 +62,21 @@
    <SEND>
       <XML>
          <!-- Joint state positions -->
-         <ELEMENT Tag="RobotState/Pos/@A1"/>
-         <ELEMENT Tag="RobotState/Pos/@A2"/>
-         <ELEMENT Tag="RobotState/Pos/@A3"/>
-         <ELEMENT Tag="RobotState/Pos/@A4"/>
-         <ELEMENT Tag="RobotState/Pos/@A5"/>
-         <ELEMENT Tag="RobotState/Pos/@A6"/>
-         <!-- Joint state velocities -->
-         <ELEMENT Tag="RobotState/Vel/@A1"/>
-         <ELEMENT Tag="RobotState/Vel/@A2"/>
-         <ELEMENT Tag="RobotState/Vel/@A3"/>
-         <ELEMENT Tag="RobotState/Vel/@A4"/>
-         <ELEMENT Tag="RobotState/Vel/@A5"/>
-         <ELEMENT Tag="RobotState/Vel/@A6"/>
-         <!-- Joint state efforts (torques) -->
-         <ELEMENT Tag="RobotState/Eff/@A1"/>
-         <ELEMENT Tag="RobotState/Eff/@A2"/>
-         <ELEMENT Tag="RobotState/Eff/@A3"/>
-         <ELEMENT Tag="RobotState/Eff/@A4"/>
-         <ELEMENT Tag="RobotState/Eff/@A5"/>
-         <ELEMENT Tag="RobotState/Eff/@A6"/>
+         <ELEMENT Tag="RobotState/Cart/@A1"/>
+         <ELEMENT Tag="RobotState/Cart/@A2"/>
+         <ELEMENT Tag="RobotState/Cart/@A3"/>
+         <ELEMENT Tag="RobotState/Cart/@A4"/>
+         <ELEMENT Tag="RobotState/Cart/@A5"/>
+         <ELEMENT Tag="RobotState/Cart/@A6"/>
+         <!-- Cartesian state positions -->
+         <ELEMENT Tag="RobotState/Cart/@X"/>
+         <ELEMENT Tag="RobotState/Cart/@Y"/>
+         <ELEMENT Tag="RobotState/Cart/@Z"/>
+         <ELEMENT Tag="RobotState/Cart/@A"/>
+         <ELEMENT Tag="RobotState/Cart/@B"/>
+         <ELEMENT Tag="RobotState/Cart/@C"/>
          <!-- Interface state -->
-         <ELEMENT Tag="RobotState/RobotCommand/@Size"/>
-         <!-- Number of elements currently in command buffer -->
+         <ELEMENT Tag="RobotState/RobotCommand/@Size"/> <!-- Number of elements currently in command buffer -->
       </XML>
    </SEND>
 </ETHERNETKRL>

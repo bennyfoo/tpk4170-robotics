@@ -4,6 +4,7 @@ def  kuka_eki_hw_interface()
    ; Software License Agreement (BSD License)
    ;
    ; Copyright (c) 2018, 3M
+   ; Copyright (c) 2018, Norwegian University of Science and Technology
    ; All rights reserved.
    ;
    ; Redistribution and use in source and binary forms, with or without
@@ -31,10 +32,14 @@ def  kuka_eki_hw_interface()
    ; POSSIBILITY OF SUCH DAMAGE.
 
    ; Author: Brett Hemes (3M) <brhemes@mmm.com>
+   ; Modified by: Lars Tingelstad (NTNU) <lars.tingelstad@ntnu.no>
 
 
    ; Declarations
+   decl int cmd_type_tgt
+   decl e6pos cart_pos_tgt
    decl axis joint_pos_tgt
+   decl real max_velocity_scaling_factor_tgt
    decl int elements_read
 
    ; INI
@@ -67,10 +72,23 @@ def  kuka_eki_hw_interface()
    ptp joint_pos_tgt
 
    ; Loop forever
-   $advance = 5
+   $advance = 1
    loop
-      elements_read = eki_hw_iface_get(joint_pos_tgt)  ; Get new command from buffer if present
-      ptp joint_pos_tgt c_ptp                          ; PTP to most recent commanded position
+      ; Get new command from buffer if present
+      elements_read = eki_hw_iface_get(cmd_type_tgt, joint_pos_tgt, cart_pos_tgt, max_velocity_scaling_factor_tgt)  
+      $ov_pro = 100 * max_velocity_scaling_factor_tgt
+      switch cmd_type_tgt
+         case 1:
+            ptp joint_pos_tgt
+         case 2:
+            ptp cart_pos_tgt
+         case 3:
+            lin cart_pos_tgt
+         case 4:
+            ptp_rel joint_pos_tgt
+         case 5:
+            lin_rel cart_pos_tgt 
+      endswitch
    endloop
 
    ; Note: EKI channels delete on reset or deselect of this program
@@ -106,27 +124,20 @@ def eki_hw_iface_send()
 
    if $flag[1] then  ; If connection alive
       ; Load state values into xml structure
-      ; position
-      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Pos/@A1", $axis_act_meas.a1)
-      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Pos/@A2", $axis_act_meas.a2)
-      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Pos/@A3", $axis_act_meas.a3)
-      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Pos/@A4", $axis_act_meas.a4)
-      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Pos/@A5", $axis_act_meas.a5)
-      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Pos/@A6", $axis_act_meas.a6)
-      ; velocity
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Vel/@A1", $vel_axis_act[1] * $vel_axis_ma[1] / 100.0)
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Vel/@A2", $vel_axis_act[2] * $vel_axis_ma[2] / 100.0)
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Vel/@A3", $vel_axis_act[3] * $vel_axis_ma[3] / 100.0)
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Vel/@A4", $vel_axis_act[4] * $vel_axis_ma[4] / 100.0)
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Vel/@A5", $vel_axis_act[5] * $vel_axis_ma[5] / 100.0)
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Vel/@A6", $vel_axis_act[6] * $vel_axis_ma[6] / 100.0)
-      ; effort
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Eff/@A1", $torque_axis_act[1])
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Eff/@A2", $torque_axis_act[2])
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Eff/@A3", $torque_axis_act[3])
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Eff/@A4", $torque_axis_act[4])
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Eff/@A5", $torque_axis_act[5])
-      ;eki_ret = eki_setreal("EkiHwInterface", "RobotState/Eff/@A6", $torque_axis_act[6])
+      ; joint position
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Axis/@A1", $axis_act_meas.a1)
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Axis/@A2", $axis_act_meas.a2)
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Axis/@A3", $axis_act_meas.a3)
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Axis/@A4", $axis_act_meas.a4)
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Axis/@A5", $axis_act_meas.a5)
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Axis/@A6", $axis_act_meas.a6)
+      ; cartesian position
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Cart/@X", $pos_act_mes.x)
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Cart/@Y", $pos_act_mes.y)
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Cart/@Z", $pos_act_mes.z)
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Cart/@A", $pos_act_mes.a)
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Cart/@B", $pos_act_mes.b)
+      eki_ret = eki_setreal("EkiHwInterface", "RobotState/Cart/@C", $pos_act_mes.c)
       ; interface state
       eki_ret = eki_checkbuffer("EkiHwInterface", "RobotCommand/Pos/@A1")
       eki_ret = eki_setint("EkiHwInterface", "RobotState/RobotCommand/@Size", eki_ret.buff)
@@ -159,9 +170,12 @@ endfct
 ; eki_hw_iface_get
 ; Tries to read most recent elemnt from buffer. q left unchanged if empty.
 ; Returns number of elements read.
-deffct int eki_hw_iface_get(joint_pos_cmd :out)
+deffct int eki_hw_iface_get(cmd_type_cmd :out, joint_pos_cmd :out, cart_pos_cmd :out, max_velocity_scaling_factor_cmd :out)
    decl eki_status eki_ret
+   decl int cmd_type_cmd
+   decl e6pos cart_pos_cmd
    decl axis joint_pos_cmd
+   decl real max_velocity_scaling_factor_cmd
 
    if not $flag[1] then
       return 0
@@ -172,12 +186,24 @@ deffct int eki_hw_iface_get(joint_pos_cmd :out)
      return 0
    endif
 
-   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Pos/@A1", joint_pos_cmd.a1)
-   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Pos/@A2", joint_pos_cmd.a2)
-   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Pos/@A3", joint_pos_cmd.a3)
-   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Pos/@A4", joint_pos_cmd.a4)
-   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Pos/@A5", joint_pos_cmd.a5)
-   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Pos/@A6", joint_pos_cmd.a6)
+   eki_ret = eki_getint("EkiHwInterface", "RobotCommand/Type", cmd_type_cmd)
+
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Axis/@A1", joint_pos_cmd.a1)
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Axis/@A2", joint_pos_cmd.a2)
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Axis/@A3", joint_pos_cmd.a3)
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Axis/@A4", joint_pos_cmd.a4)
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Axis/@A5", joint_pos_cmd.a5)
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Axis/@A6", joint_pos_cmd.a6)
+
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Cart/@X", cart_pos_cmd.x)
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Cart/@Y", cart_pos_cmd.y)
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Cart/@Z", cart_pos_cmd.z)
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Cart/@A", cart_pos_cmd.a)
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Cart/@B", cart_pos_cmd.b)
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/Cart/@C", cart_pos_cmd.c)
+
+   eki_ret = eki_getreal("EkiHwInterface", "RobotCommand/MaxVelocityScalingFactor", max_velocity_scaling_factor_cmd)
+
    return 1
 endfct
 
