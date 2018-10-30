@@ -20,4 +20,4 @@ install:
   - python setup.py install
 
 script:
-  # Test script goes here
+  - python test/import_test.py
