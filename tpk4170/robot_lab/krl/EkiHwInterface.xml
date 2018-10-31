@@ -9,7 +9,7 @@
          <!-- Allow buffering of up to 512 messages (system max) -->
          <ALIVE Set_Flag="1" />
          <!-- Use $flag[1] to indicate alive/good connection status -->
-         <IP>address.of.robot.controller</IP>         <!-- IP address for EKI interface on robot controller (KRC) -->
+         <IP>192.168.250.20</IP>         <!-- IP address for EKI interface on robot controller (KRC) -->
          <PORT>54600</PORT>         <!-- Port of EKI interface on robot controller (in [54600, 54615]) -->
          <PROTOCOL>UDP</PROTOCOL>         <!-- Use UDP protocol -->
       </INTERNAL>
@@ -45,7 +45,7 @@
          <ELEMENT Tag="RobotCommand/Cart/@B" Type="REAL" />
          <ELEMENT Tag="RobotCommand/Cart/@C" Type="REAL" />
          <!-- Max velocity scaling -->
-         <ELEMENT Tag="RobotCommand/MaxVelocityScalingFactor" Type="REAL" />
+         <ELEMENT Tag="RobotCommand/Velocity" Type="REAL" />
       </XML>
    </RECEIVE>
 
@@ -62,12 +62,13 @@
    <SEND>
       <XML>
          <!-- Joint state positions -->
-         <ELEMENT Tag="RobotState/Cart/@A1"/>
-         <ELEMENT Tag="RobotState/Cart/@A2"/>
-         <ELEMENT Tag="RobotState/Cart/@A3"/>
-         <ELEMENT Tag="RobotState/Cart/@A4"/>
-         <ELEMENT Tag="RobotState/Cart/@A5"/>
-         <ELEMENT Tag="RobotState/Cart/@A6"/>
+         <ELEMENT Tag="RobotState/Axis/@A1"/>
+         <ELEMENT Tag="RobotState/Axis/@A2"/>
+         <ELEMENT Tag="RobotState/Axis/@A3"/>
+         <ELEMENT Tag="RobotState/Axis/@A4"/>
+         <ELEMENT Tag="RobotState/Axis/@A5"/>
+         <ELEMENT Tag="RobotState/Axis/@A6"/>
+
          <!-- Cartesian state positions -->
          <ELEMENT Tag="RobotState/Cart/@X"/>
          <ELEMENT Tag="RobotState/Cart/@Y"/>
@@ -75,8 +76,12 @@
          <ELEMENT Tag="RobotState/Cart/@A"/>
          <ELEMENT Tag="RobotState/Cart/@B"/>
          <ELEMENT Tag="RobotState/Cart/@C"/>
+
          <!-- Interface state -->
          <ELEMENT Tag="RobotState/RobotCommand/@Size"/> <!-- Number of elements currently in command buffer -->
+
+         <ELEMENT Tag="RobotState" Set_Flag=
+"56"/>
       </XML>
    </SEND>
 </ETHERNETKRL>
