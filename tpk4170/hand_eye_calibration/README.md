@@ -1,0 +1,1 @@
+The code and figures used here for hand-eye calibration is taken from the repository https://github.com/torstem/robcam-calibration by [Torstein A. Myhre](https://www.sintef.no/alle-ansatte/ansatt/?empId=7488) who now works at SINTEF Digital in the Department of Mathematics and Physics. The work was developed while he was a PhD student and Post. Doc. at NTNU.
