@@ -5,6 +5,7 @@ from pythreejs import Mesh
 from pythreejs import (Geometry, SphereGeometry,
                        BufferGeometry, PlaneGeometry)
 from pythreejs import BufferAttribute
+from pythreejs import Points, PointsMaterial
 from pythreejs import (
     LineBasicMaterial, MeshLambertMaterial, MeshPhongMaterial, MeshBasicMaterial)
 from pythreejs import AxesHelper as Axes
@@ -99,3 +100,11 @@ class Triangle(Mesh):
         material = MeshBasicMaterial(color=color)
         material.side = 'DoubleSide'
         Mesh.__init__(self, geometry=geometry, material=material)
+
+
+class PointCloud(Points):
+    def __init__(self, points, point_size=0.001, color='green'):
+        geometry = BufferGeometry(
+            attributes={'position': BufferAttribute(array=points.astype(np.float32))})
+        material = PointsMaterial(size=point_size, color=color)
+        Points.__init__(self, geometry=geometry, material=material)
