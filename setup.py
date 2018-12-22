@@ -1,6 +1,13 @@
 #!/usr/bin/env python
+# Copyright (c) NTNU, Norwegian University of Science and Technology
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
 
 from setuptools import setup, find_packages
+
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
 
 setup(name='tpk4170',
       version='1.0',
@@ -8,7 +15,8 @@ setup(name='tpk4170',
       author='Lars Tingelstad',
       author_email='lars.tingelstad@ntnu.no',
       url='',
-      packages=find_packages(exclude=['robot_models']),
+      packages=['tpk4170'],
+      install_requires=requirements,
       data_files=[
           ('share/tpk4170/models/ur5/visual/',
              [
