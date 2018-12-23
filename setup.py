@@ -49,4 +49,9 @@ setup(name='tpk4170',
                'tpk4170/models/kr16_2/visual/link_6.dae',
            ]),
       ],
+      classifiers=[
+          "Programming Language :: Python :: 3",
+          "License :: OSI Approved :: MIT License",
+          "Operating System :: OS Independent",
+      ],
       )
