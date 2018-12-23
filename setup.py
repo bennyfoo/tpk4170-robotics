@@ -15,7 +15,7 @@ setup(name='tpk4170',
       author='Lars Tingelstad',
       author_email='lars.tingelstad@ntnu.no',
       url='',
-      packages=['tpk4170'],
+      packages=find_packages(),
       install_requires=requirements,
       data_files=[
           ('share/tpk4170/models/ur5/visual/',
