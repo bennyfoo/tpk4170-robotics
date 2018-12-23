@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 
 setup(name='tpk4170',
-      version='0.0.2',
+      version='0.0.3',
       description='Python modules for the course TPK4170 Robotics at NTNU ',
       author='Lars Tingelstad',
       author_email='lars.tingelstad@ntnu.no',
