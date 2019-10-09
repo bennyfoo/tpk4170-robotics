@@ -59,3 +59,27 @@ def fk_kr6r900sixx(q):
     q_zero_offset = [0.0, 0.0, -np.pi/2, 0.0, 0.0, 0.0]
     joint_direction = [-1, 1, 1, -1, 1, -1]
     return fk_dh(a, alpha, d, q_zero_offset, q)
+    
+class Ur5Kinematics:
+    def __init__(self):
+        W1 = 0.10915
+        W2 = 0.0823
+        L1 = 0.425
+        L2 = 0.39225
+        H1 = 0.089159
+        H2 = 0.09465
+        self._M = np.array([[-1.0, 0.0, 0.0, L1 + L2],
+                            [0.0, 0.0, 1.0, W1 + W2],
+                            [0.0, 1.0, 0.0, H1 - H2],
+                            [0.0, 0.0, 0.0, 1.0]])
+        
+        self._SList = np.array([[0.0, 0.0, 1.0, 0.0, 0.0, 0.0], 
+                                [0.0, 1.0, 0.0, -H1, 0.0, 0.0],
+                                [0.0, 1.0, 0.0, -H1, 0.0, L1],
+                                [0.0, 1.0, 0.0, -H1, 0.0, L1 + L2],
+                                [0.0, 0.0, -1.0, -W1, L1 + L2, 0.0],
+                                [0.0, 1.0, 0.0, H2 - H1, 0.0, L1 + L2]])
+        
+    def fkin(self, theta):
+        return mr.FKinSpace(self._M, self._SList, theta)
+        
