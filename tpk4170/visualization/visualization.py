@@ -6,6 +6,7 @@ from tpk4170.forward_kinematics import fk_kr6r900sixx
 from tpk4170.models import kr6r900sixx as kr6
 from tpk4170.models import Grid, Ball
 
+from tpk4170.utils.transformations import quaternion_from_euler
 
 class Visualizer:
     def __init__(self, base_link, link_1, link_2,
@@ -77,3 +78,81 @@ class Kr6R900SixxVisualizer(Visualizer):
                             kr6.Link6(),
                             fk_kr6r900sixx,
                             interact)
+
+
+class Ur5Visualizer:
+    def __init__(self):
+        self._viewer = Viewer()
+        self._grid = Grid()
+        self._viewer.add(self._grid)
+
+        base_link = ur5.BaseLink()
+        link1 = ur5.Link1()
+        link2 = ur5.Link2()
+        link3 = ur5.Link3()
+        link4 = ur5.Link4()
+        link5 = ur5.Link5()
+        link6 = ur5.Link6()
+        ee_link = Axes(0.1)
+
+        joint1 = Object3D()
+        joint1.position = (0.0, 0.0, 0.089159)
+        joint2 = Object3D()
+        joint2.position = (0.0, 0.13585, 0.0)
+        joint3 = Object3D()
+        joint3.position = (0.0, -0.1197, 0.425)
+        joint4 = Object3D()
+        joint4.position = (0.0, 0.0, 0.39225)
+        joint5 = Object3D()
+        joint5.position = (0.0, 0.093, 0.0)
+        joint6 = Object3D()
+        joint6.position = (0.0, 0.0, 0.09465)
+
+        ee_joint = Object3D()
+        ee_joint.position = (0.0, 0.0823, 0.0)
+        ee_joint.rotateX(-np.pi/2)
+
+        base_link.add(joint1)
+        joint1.add(link1)
+        link1.add(joint2)
+        joint2.add(link2)
+        link2.add(joint3)
+        joint3.add(link3)
+        link3.add(joint4)
+        joint4.add(link4)
+        link4.add(joint5)
+        joint5.add(link5)
+        link5.add(joint6)
+        joint6.add(link6)
+        link6.add(ee_joint)
+        ee_joint.add(ee_link)
+
+        self._joints = [joint1, joint2, joint3, joint4, joint5, joint6]
+        self._offsets = np.array([0.0, np.pi/2, 0.0, np.pi/2, 0.0, 0.0])
+        self._axes = np.array([[0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [0.0, 1.0, 0.0],
+                               [0.0, 1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0]])
+        self._angles = np.zeros(6)
+
+        self.angles(self._angles)
+
+        self._robot = base_link
+        self._viewer.add(self._robot)
+
+    def angles(self, theta):
+        assert len(theta) == 6
+        self._angles = theta
+        for th, joint, offset, axes in zip(theta, self._joints, self._offsets, self._axes):
+            joint.quaternion = quaternion_from_euler(
+                *((th + offset) * axes)).tolist()
+
+    def interact(self):
+        def f(q1, q2, q3, q4, q5, q6):
+            q = np.array([q1, q2, q3, q4, q5, q6])
+            self.angles(q)
+        ipywidgets.interact(f,
+                            q1=(np.deg2rad(-180), np.deg2rad(180)),
+                            q2=(np.deg2rad(-180), np.deg2rad(180)),
+                            q3=(np.deg2rad(-180), np.deg2rad(180)),
+                            q4=(np.deg2rad(-180), np.deg2rad(180)),
+                            q5=(np.deg2rad(-180), np.deg2rad(180)),
+                            q6=(np.deg2rad(-180), np.deg2rad(180)))
