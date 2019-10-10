@@ -1,12 +1,15 @@
 import numpy as np
 import ipywidgets
 
+from pythreejs import Object3D
+
 from tpk4170.visualization.viewer import Viewer
 from tpk4170.forward_kinematics import fk_kr6r900sixx
 from tpk4170.models import kr6r900sixx as kr6
 from tpk4170.models import Grid, Ball
 
 from tpk4170.utils.transformations import quaternion_from_euler
+
 
 class Visualizer:
     def __init__(self, base_link, link_1, link_2,
@@ -131,16 +134,20 @@ class Ur5Visualizer:
         self._offsets = np.array([0.0, np.pi/2, 0.0, np.pi/2, 0.0, 0.0])
         self._axes = np.array([[0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [0.0, 1.0, 0.0],
                                [0.0, 1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0]])
-        self._angles = np.zeros(6)
 
-        self.angles(self._angles)
+        self.theta = np.zeros(6)
 
         self._robot = base_link
         self._viewer.add(self._robot)
 
-    def angles(self, theta):
+    @property
+    def theta(self):
+        return self._theta
+
+    @theta.setter
+    def theta(self, theta):
         assert len(theta) == 6
-        self._angles = theta
+        self._theta = theta
         for th, joint, offset, axes in zip(theta, self._joints, self._offsets, self._axes):
             joint.quaternion = quaternion_from_euler(
                 *((th + offset) * axes)).tolist()
@@ -148,7 +155,7 @@ class Ur5Visualizer:
     def interact(self):
         def f(q1, q2, q3, q4, q5, q6):
             q = np.array([q1, q2, q3, q4, q5, q6])
-            self.angles(q)
+            self.theta = q
         ipywidgets.interact(f,
                             q1=(np.deg2rad(-180), np.deg2rad(180)),
                             q2=(np.deg2rad(-180), np.deg2rad(180)),
