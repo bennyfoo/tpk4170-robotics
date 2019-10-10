@@ -6,8 +6,7 @@ from pythreejs import Object3D
 from tpk4170.visualization.viewer import Viewer
 from tpk4170.forward_kinematics import fk_kr6r900sixx
 from tpk4170.models import kr6r900sixx as kr6
-from tpk4170.models import Grid, Ball
-
+from tpk4170.models import Grid, Ball, ur5
 from tpk4170.utils.transformations import quaternion_from_euler
 
 
