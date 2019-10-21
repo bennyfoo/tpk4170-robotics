@@ -20,8 +20,6 @@ setup(name='tpk4170',
           'pycollada>=0.4.1',
           'pythreejs>=2.0.0',
           'opencv-python>=3.4.4',
-          'mypy>=0.630',
-          'typing_extensions>=3.6.6'
       ],
       data_files=[
           ('share/tpk4170/models/ur5/visual/',
